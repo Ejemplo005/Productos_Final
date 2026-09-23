@@ -1,0 +1,40 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.3.4'
+    id 'io.spring.dependency-management' version '1.1.6'
+}
+
+group = 'com.productos'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // Persistencia (JPA + Hibernate, gestionado por Spring Boot)
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+    // Web (controllers, embebe Tomcat)
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+
+    // Motor de plantillas para las vistas HTML (productos.html, admin.html)
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+
+    // Base de datos H2 en memoria: no requiere instalar ni configurar
+    // ningún servidor de base de datos externo. Se crea y se destruye
+    // automáticamente junto con la aplicación.
+    runtimeOnly 'com.h2database:h2'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}

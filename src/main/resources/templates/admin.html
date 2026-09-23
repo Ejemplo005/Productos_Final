@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Aguas Astrales · Administracion</title>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
+</head>
+<body>
+
+<header>
+    <a th:href="@{/}" style="display:flex;align-items:center;">
+        <img th:src="@{/images/logo-aa.png}" alt="Logo Aguas Astrales">
+        <span class="brand">Aguas<span>Astrales</span></span>
+    </a>
+    <nav>
+        <a th:href="@{/}">Ver tienda</a>
+    </nav>
+</header>
+
+<div class="admin-card">
+    <h1 th:text="${producto.id == null} ? 'Nuevo producto' : 'Editar producto'">Panel</h1>
+    <p style="color:var(--muted); font-size:13px;">
+        Panel sin autenticacion: cualquiera que entre a esta URL puede
+        editar el catalogo (ver el README para mas detalle).
+    </p>
+
+    <div class="panel-body">
+        <form class="form-box" th:action="@{/admin/guardar}" method="post">
+            <input type="hidden" name="id" th:value="${producto.id}">
+
+            <div>
+                <label>Nombre</label>
+                <input type="text" name="nombre" th:value="${producto.nombre}" required>
+            </div>
+
+            <div>
+                <label>Precio</label>
+                <input type="number" step="0.01" name="precio" th:value="${producto.precio}" required>
+            </div>
+
+            <div>
+                <label>Descripcion</label>
+                <textarea name="descripcion" rows="3" th:text="${producto.descripcion}"></textarea>
+            </div>
+
+            <div>
+                <label>Stock</label>
+                <input type="number" name="stock" th:value="${producto.stock}" required>
+            </div>
+
+            <div>
+                <label>Categoria</label>
+                <select name="categoriaId" required>
+                    <option value="">-- Elegir --</option>
+                    <option th:each="cat : ${categorias}"
+                            th:value="${cat.id}"
+                            th:text="${cat.nombre}"
+                            th:selected="${producto.categoria != null and producto.categoria.id == cat.id}">
+                    </option>
+                </select>
+            </div>
+
+            <div>
+                <label>Imagen (ruta dentro de /images, opcional)</label>
+                <input type="text" name="imagenUrl" th:value="${producto.imagenUrl}" placeholder="/images/ejemplo.jpeg">
+            </div>
+
+            <button type="submit" th:text="${producto.id == null} ? 'Crear producto' : 'Guardar cambios'">Guardar</button>
+        </form>
+
+        <div class="form-box">
+            <h2 style="margin-top:0;">Productos cargados</h2>
+
+            <div class="empty-state" th:if="${productos.isEmpty()}">
+                Todavia no hay productos.
+            </div>
+
+            <div th:unless="${productos.isEmpty()}">
+                <div class="admin-row" th:each="p : ${productos}">
+                    <div class="info">
+                        <strong th:text="${p.nombre}">Nombre</strong>
+                        <span style="color:var(--muted); font-size:12px;"
+                              th:text="'$ ' + ${#numbers.formatDecimal(p.precio, 1, 2)} + ' · ' + ${p.stock} + ' en stock'">
+                            $0 · 0 en stock
+                        </span>
+                    </div>
+                    <div class="acciones">
+                        <a th:href="@{/admin/editar/{id}(id=${p.id})}">Editar</a>
+                        <form th:action="@{/admin/eliminar/{id}(id=${p.id})}" method="post"
+                              onsubmit="return confirm('¿Eliminar este producto?');" style="margin:0;">
+                            <button type="submit">Eliminar</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
